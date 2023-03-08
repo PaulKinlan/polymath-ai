@@ -3,6 +3,26 @@ import { EMBEDDING_VECTOR_LENGTH, encodeEmbedding } from "./utils.js";
 //
 // Talk to remote servers and ask for their bits
 //
+const discoverEndpoint = (url) => {
+  // GET the curent URL/
+  return fetch(url)
+    .then(discoveryResponse => {
+      if (discoveryResponse.ok) {
+        return discoveryResponse.text();
+      }
+    })
+    .then(body => {
+      if (body != undefined) {
+        // This is particularly brittle.
+        const linkMatch = body.match(/<link rel="polymath" href="([^"]+)"/);
+        if (linkMatch) {
+          // need to work out base.
+          return new URL(linkMatch[1], url);
+        }
+      }
+    });
+};
+
 class PolymathEndpoint {
   constructor(server) {
     this._server = server;
@@ -36,13 +56,31 @@ class PolymathEndpoint {
 
     // Send it all over to the Endpoint
     const url = new URL(this._server);
-    const result = await (
-      await fetch(url, {
+    const result = await (fetch(url, {
         method: "POST",
         body: form,
       })
-    ).json();
-
+      .then((response) => {
+        if (
+          response.ok == false ||
+          response.headers["content-type"] != "application/json"
+        ) {
+          // There was an error, so attempt a GET to see if there is a link rel.
+          return discoverEndpoint(url)
+            .then(newUrl => { return fetch(newUrl, { method: "POST", body: form })});
+        }
+        return response;
+      })
+      .then(response => {
+        if (response.ok == false) {
+          throw new Error("Server responded with " + response.status);
+        }
+        return response;
+      })
+      .then(response => {
+        return response.json();
+      })
+    );
     return result;
   }
 
