@@ -2,7 +2,7 @@ import fs from "fs";
 
 import { Command, Option } from "commander";
 
-import { Import } from "./import.js";
+import { Import } from "./main.js";
 
 class CLI {
   private program;
@@ -21,7 +21,7 @@ class CLI {
 
     const { version, description } = this.loadVersionInfo();
 
-    program.name("polymath").description(description).version(version);
+    program.name("polymath-ingest").description(description).version(version);
 
     program.option("-d, --debug", "output extra debugging");
     program.addOption(
@@ -57,7 +57,6 @@ class CLI {
         const importer = new Import();
         const [options, command] = args.slice(-2);
         args = args.slice(0, -2);
-        //const action: Action = new importer(program.opts());
         importer.run({ args, options, command });
       });
 

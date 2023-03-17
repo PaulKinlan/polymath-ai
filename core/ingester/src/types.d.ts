@@ -1,0 +1,3 @@
+type Options = {
+  outputFile: string;
+}
