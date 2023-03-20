@@ -30,23 +30,6 @@ class CLI {
       )
     );
 
-    program.option("-p, --pinecone", "Use pinecone");
-    program.addOption(
-      new Option("--pinecone-api-key <key>", "pinecone api key").env(
-        "PINECONE_API_KEY"
-      )
-    );
-    program.addOption(
-      new Option("--pinecone-base-url <url>", "pinecone base url").env(
-        "PINECONE_BASE_URL"
-      )
-    );
-    program.addOption(
-      new Option("--pinecone-namespace <namespace>", "pinecone namespace").env(
-        "PINECONE_NAMESPACE"
-      )
-    );
-
     //
     // SUB COMMANDS
     //
