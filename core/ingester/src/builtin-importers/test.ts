@@ -1,5 +1,5 @@
-import { PolymathEndpoint } from "@polymath-ai/client";
-import { Importer, Bit } from "../importer.js";
+import { Options, Bit } from '../types.js';
+import { Importer } from "../importer.js";
 
 export default class Test extends Importer {
 

@@ -1,3 +1,5 @@
+import { Bit, Options } from './types.js';
+
 /*
   Removes urls and emojis from a string
 
@@ -29,20 +31,6 @@ function getLastPunctuation(input: string): number {
   return Math.max(lastPeriod, lastExclamation, lastQuestion);
 }
 
-export type BitInfo = {
-  url?: string;
-  title?: string;
-  description?: string;
-  image_url?: string;
-}
-
-export type Bit = {
-  id?: string;
-  text?: string;
-  token_count?: number;
-  embedding?: string;
-  info?: BitInfo;
-}
 
 export abstract class Importer {
   protected options: Options;

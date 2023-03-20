@@ -1,8 +1,9 @@
 import { join } from 'path';
 
 import { Polymath } from "@polymath-ai/client";
-import { Importer } from "./importer.js";
 import chalk from "chalk";
+import { Importer } from "./importer.js";
+import { Options } from './types.js';
 
 const error = (...args: any[]) => console.error(chalk.red("ERROR:", ...args));
 const log = (msg: string, ...args: any[]) =>
@@ -66,7 +67,7 @@ export class Import {
       log(`Importing chunk ${chunk.info?.url} \`${chunk.text}\``);
       chunk.embedding = await polymath.generateEmbedding(chunk.text);
       if (options.debug) { 
-        log(chunk.embedding);
+        log(chunk.embedding || "");
       }
     
       // TODO: Now we have the Bit, we will need to work out where to send it. stdout??

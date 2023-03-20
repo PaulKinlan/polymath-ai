@@ -1,5 +1,6 @@
-import { PolymathEndpoint } from "@polymath-ai/client";
-import { Importer, Bit } from "../importer.js";
+import { Options, Bit } from '../types.js';
+
+import { Importer } from "../importer.js";
 import RSSParser from 'rss-parser';
 
 export default class RSS extends Importer {
