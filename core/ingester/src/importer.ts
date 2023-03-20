@@ -11,16 +11,13 @@ const cleanText = (input: string): string => {
   //.replace(/[^\u{1F600}-\u{1F6FF}\s]/ug, ""); // Remove emojis (https://stackoverflow.com/questions/24672834/how-do-i-remove-emoji-from-string)
 }
 
-
 // NOTE: Dependant on the model we are using with OpenAI, we need to chunk the data in to optimal sizes. In some cases we might only have one bit for an entire document.
 const MIN_CHUNK_SIZE = 500;
 const MAX_CHUNK_SIZE = 1500; // We need to check which model we are using with OpenAI because they all have different limits.
-
 const GOLDIELOCKS = {
   "min": MAX_CHUNK_SIZE - MIN_CHUNK_SIZE,
   "max": MAX_CHUNK_SIZE + MIN_CHUNK_SIZE
 }
-
 const MEH_SIZE = GOLDIELOCKS.min / 2
 
 function getLastPunctuation(input: string): number {
@@ -30,7 +27,6 @@ function getLastPunctuation(input: string): number {
 
   return Math.max(lastPeriod, lastExclamation, lastQuestion);
 }
-
 
 export abstract class Importer {
   protected options: Options;
