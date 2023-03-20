@@ -15,8 +15,8 @@ Design
 Library
 =======
 
-Extend `Importer`
------------------
+Extend `Importer` for use in the CLI
+------------------------------------
 
 You are able to extend the `Importer` class to create your own importer.
 
@@ -48,4 +48,19 @@ class MYRSS extends Importer {
   }
 
 }
+```
+
+E.g:
+`> polymath-ingest rss https://paul.kinlan.me/index.xml`
+
+Embed the `Import` process
+==========================
+
+It is possible to use the `Import` process directly in your own code.
+
+```
+import { Importer } from "./importer.js";
+
+const importer = new Importer({ /* options */ });
+importer.run({ args, options, command });  // As of right now this outputs to STDOUT
 ```
