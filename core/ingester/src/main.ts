@@ -61,10 +61,10 @@ export class Import {
     const polymath = new Polymath({apiKey: openaiApiKey});
 
     // For the future, because this is a generator, we might be able to make it parallel quite easily.
-    for (const chunk of importer.getChunks()) {
-      log("Importing chunk", chunk);
+    for (const chunk of importer.generateChunks()) {
+      log(`Importing chunk ${chunk}`);
       const embedding = await polymath.generateEmbedding(chunk);
-      log(embedding);
+      if (options.debug) log(embedding);
     
       // Now we have the chunk, we will need to work out where to send it. stdout??
     }
