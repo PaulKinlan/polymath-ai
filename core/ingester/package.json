@@ -1,7 +1,7 @@
 {
-  "name": "@polymath-ai/ingestor",
+  "name": "@polymath-ai/ingester",
   "version": "0.0.9",
-  "description": "An ingestor library for Polymath",
+  "description": "An ingester library for Polymath",
   "type": "module",
   "main": "src/main.js",
   "exports": "./src/main.js",
