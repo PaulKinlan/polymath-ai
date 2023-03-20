@@ -33,7 +33,7 @@ export class Import {
     let loadedImporter: Importer;
     let parsedOptions: Options = parseOptions(options);
 
-    if (openaiApiKey == null) { 
+    if (openaiApiKey == null) {
       error("Please provide an OpenAI API key");
       throw new Error("Please provide an OpenAI API key");
     }
@@ -43,7 +43,7 @@ export class Import {
       throw new Error("Please configure an importer");
     }
 
-    if(!importerArg.startsWith('../') && !importerArg.startsWith('./')) {
+    if (!importerArg.startsWith('../') && !importerArg.startsWith('./')) {
       log(`Loading built-in importer: ${importerArg}`);
       loadedImporter = await Importer.load(join('builtin-importers', `${importerArg}.js`));
     }
@@ -61,19 +61,17 @@ export class Import {
     // <any> is needed here because the typescript compiler doesn't like it when we use the `new` keyword on a dynamic import.
     const importer: Importer = new (loadedImporter as any)(parsedOptions) as Importer;
 
-    const polymath = new Polymath({apiKey: openaiApiKey});
+    const polymath = new Polymath({ apiKey: openaiApiKey });
 
     for await (const chunk of importer.generateChunks(source)) {
       log(`Importing chunk ${chunk.info?.url} \`${chunk.text}\``);
+      if (chunk.text == null) { continue; }
       chunk.embedding = await polymath.generateEmbedding(chunk.text);
-      if (options.debug) { 
-        log(chunk.embedding || "");
-      }
-    
+      
       // TODO: Now we have the Bit, we will need to work out where to send it. stdout??
       yield chunk;
     }
-    
+
     log("\nDone importing\n\n");
   }
 }

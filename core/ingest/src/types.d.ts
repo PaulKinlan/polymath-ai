@@ -13,7 +13,7 @@ export type Bit = {
   id?: string;
   text?: string;
   token_count?: number;
-  embedding?: string;
+  embedding?: number[];
   info?: BitInfo;
 }
 
