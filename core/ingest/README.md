@@ -3,7 +3,17 @@ Binary
 
 Standalone ingestion tool.
 
-`@polymath/ingest [something]`
+Install: `npm install -g @polymath/ingest`
+
+Using Builtin importers
+-----------------------
+
+`@polymath/ingest --openai-api-key=[SECRET] rss https://paul.kinlan.me/index.xml`
+
+Using a self hosted importer
+----------------------------
+
+`@polymath/ingest --openai-api-key=[SECRET] ../test/import/html.js https://paul.kinlan.me/`
 
 
 Design
@@ -11,8 +21,7 @@ Design
 
 * The output file format should not be the concern of the ingester. It should be the concern of the consumer of the ingester.
 
-
-Library
+API
 =======
 
 Extend `Importer` for use in the CLI
