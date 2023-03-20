@@ -22,7 +22,7 @@ Design
 * The output file format should not be the concern of the ingester. It should be the concern of the consumer of the ingester.
 
 API
-=======
+===
 
 Extend `Importer` for use in the CLI
 ------------------------------------
@@ -71,5 +71,9 @@ It is possible to use the `Import` process directly in your own code.
 import { Importer } from "./importer.js";
 
 const importer = new Importer({ /* options */ });
-importer.run({ args, options, command });  // As of right now this outputs to STDOUT
+
+for await(const bit of importer.run({ args, options, command })) {
+  console.log(`${bit.url}: Embedding: ${bit.embedding}`);)  
+}
+
 ```

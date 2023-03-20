@@ -65,10 +65,10 @@ export class Import {
 
     for await (const chunk of importer.generateChunks(source)) {
       log(`Importing chunk ${chunk.info?.url} \`${chunk.text}\``);
-      if (chunk.text == null) { continue; }
+      if (chunk.text == null) { 
+        continue; 
+      }
       chunk.embedding = await polymath.generateEmbedding(chunk.text);
-      
-      // TODO: Now we have the Bit, we will need to work out where to send it. stdout??
       yield chunk;
     }
 
