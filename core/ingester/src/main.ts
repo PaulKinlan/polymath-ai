@@ -3,7 +3,7 @@ import { join } from 'path';
 import { Polymath } from "@polymath-ai/client";
 import chalk from "chalk";
 import { Importer } from "./importer.js";
-import { Options } from './types.js';
+import { Bit, Options } from './types.js';
 
 const error = (...args: any[]) => console.error(chalk.red("ERROR:", ...args));
 const log = (msg: string, ...args: any[]) =>
@@ -25,7 +25,7 @@ function parseOptions(options: any): Options {
 
 // The importer is an API that can be used by any tool (e.g, the CLI.)
 export class Import {
-  async run({ args, options, command }: RunArguments) {
+  async *run({ args, options, command }: RunArguments): AsyncGenerator<Bit> {
     const importerArg = args[0];
     const source = args[1];
 
@@ -58,7 +58,7 @@ export class Import {
       throw new Error(`Importer ${importerArg} not found`);
     }
 
-    // Urgh as <any> is needed here because the typescript compiler doesn't like it when we use the `new` keyword on a dynamic import.
+    // <any> is needed here because the typescript compiler doesn't like it when we use the `new` keyword on a dynamic import.
     const importer: Importer = new (loadedImporter as any)(parsedOptions) as Importer;
 
     const polymath = new Polymath({apiKey: openaiApiKey});
@@ -71,6 +71,7 @@ export class Import {
       }
     
       // TODO: Now we have the Bit, we will need to work out where to send it. stdout??
+      yield chunk;
     }
     
     log("\nDone importing\n\n");
