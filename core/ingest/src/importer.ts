@@ -82,7 +82,11 @@ export abstract class Importer {
       buffer += cleanedText;
 
       if (buffer.length + cleanedText.length <= GOLDIELOCKS.max) {
-        // accumulate the chunks in to the optimal size. We're good to continue
+        yield {
+          text: "\n" + buffer,
+          info: source.info
+        };
+        buffer = "";
         continue;
       }
 
@@ -118,6 +122,7 @@ export abstract class Importer {
         remainingBuffer = remainingBuffer.substring(GOLDIELOCKS.max);
       } while (remainingBuffer.length > GOLDIELOCKS.max)
 
+     
       // Yield the last chunk
       if (buffer.length > 0) {
         yield {

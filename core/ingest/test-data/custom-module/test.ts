@@ -1,11 +1,12 @@
-import { Importer } from "../../dist/src/importer.js";
+import { Importer } from "../../src/importer.js";
+import { Bit, Options } from "../../src/types.js";
 
 export default class Test extends Importer {
-  constructor(options) {
+  constructor(options: Options) {
     super(options);
   }
 
-  async *getStringsFromSource(source) {
+  async *getStringsFromSource(source: string): AsyncGenerator<Bit> {
     yield {
       info: { url: source + 1 },
       text: "This is a long string with no punctuation",

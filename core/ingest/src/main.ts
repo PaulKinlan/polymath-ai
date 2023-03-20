@@ -65,9 +65,11 @@ export class Import {
 
     for await (const chunk of importer.generateChunks(source)) {
       log(`Importing chunk ${chunk.info?.url} \`${chunk.text}\``);
+      
       if (chunk.text == null) { 
         continue; 
       }
+    
       chunk.embedding = await polymath.generateEmbedding(chunk.text);
       yield chunk;
     }
