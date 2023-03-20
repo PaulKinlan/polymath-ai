@@ -53,6 +53,7 @@ class CLI {
 
     program
       .argument("[question]", "Which ingester should the Polymath use?")
+      .argument("[source]", "What source should be ingested?")
       .action((...args: string[]) => {
         const importer = new Import();
         const [options, command] = args.slice(-2);

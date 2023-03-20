@@ -25,15 +25,16 @@ function parseOptions(options: any): Options {
 export class Import {
   async run({ args, options, command }: RunArguments) {
     const importerArg = args[0];
+    const source = args[1];
+
     const { openaiApiKey, debug } = options;
+    let loadedImporter: Importer;
+    let parsedOptions: Options = parseOptions(options);
 
     if (openaiApiKey == null) { 
       error("Please provide an OpenAI API key");
       throw new Error("Please provide an OpenAI API key");
     }
-
-    let loadedImporter: Importer;
-    let parsedOptions: Options = parseOptions(options);
 
     if (args.length == 0) {
       error("Please configure an importer");
@@ -60,10 +61,9 @@ export class Import {
 
     const polymath = new Polymath({apiKey: openaiApiKey});
 
-    // For the future, because this is a generator, we might be able to make it parallel quite easily.
-    for (const chunk of importer.generateChunks()) {
-      log(`Importing chunk ${chunk}`);
-      const embedding = await polymath.generateEmbedding(chunk);
+    for await (const chunk of importer.generateChunks(source)) {
+      log(`Importing chunk ${chunk.info?.url} \`${chunk.text}\``);
+      const embedding = await polymath.generateEmbedding(chunk.text);
       if (options.debug) log(embedding);
     
       // Now we have the chunk, we will need to work out where to send it. stdout??

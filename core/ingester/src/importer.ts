@@ -11,8 +11,8 @@ const cleanText = (input: string): string => {
 
 
 // NOTE: Dependant on the model we are using with OpenAI, we need to chunk the data in to optimal sizes. In some cases we might only have one bit for an entire document.
-const MIN_CHUNK_SIZE = 5;
-const MAX_CHUNK_SIZE = 10; // We need to check which model we are using with OpenAI because they all have different limits.
+const MIN_CHUNK_SIZE = 500;
+const MAX_CHUNK_SIZE = 1500; // We need to check which model we are using with OpenAI because they all have different limits.
 
 const GOLDIELOCKS = {
   "min": MAX_CHUNK_SIZE - MIN_CHUNK_SIZE,
@@ -29,6 +29,21 @@ function getLastPunctuation(input: string): number {
   return Math.max(lastPeriod, lastExclamation, lastQuestion);
 }
 
+export type BitInfo = {
+  url?: string;
+  title?: string;
+  description?: string;
+  image_url?: string;
+}
+
+export type Bit = {
+  id?: string;
+  text?: string;
+  token_count?: number;
+  embedding?: string;
+  info?: BitInfo;
+}
+
 export abstract class Importer {
   protected options: Options;
 
@@ -41,22 +56,37 @@ export abstract class Importer {
     return importer.default;
   }
 
-  // Override this method to return the data to be encoded.
-  *getChunks(): Generator<string> {
-    yield "";
+  /* 
+  Gets the full source text for a given input path.
+
+  This method must implemented in all inherited classes
+  
+  An inherited class might want to do a glob on a path name so it can be
+  expanded to multiple files. This method should return a generator that yields
+  the full text of each source.
+
+  Returns partial bits.
+  */
+  async *getStringsFromSource(source: string): AsyncGenerator<Bit> {
+    // e.g yield { url: source, fullText: "" };
+    throw new Error("getStringsFromSource not implemented");
   }
 
   /*
     This method should return a generator that yields chunks of data to the embedding encoder. The chunks of data will be optimally sized for the embedding encoder.
 
     This is overridable by an importer if so desired.
+
+    Yields a partial Bit.
   */
-  *generateChunks(): Generator<string> {
+  async *generateChunks(source: string): AsyncGenerator<Bit> {
     console.log("[LOG] Generating Chunks");
     // Accumulate the buffer.
     let buffer: string = "";
-    const strings = this.getChunks();
-    for (const stringToEncode of strings) {
+    const stringSources = this.getStringsFromSource(source);
+    for await (const source of stringSources) {
+      console.log(`[LOG] Processing source: ${source.info?.url}`);
+      const stringToEncode = source.text || "";
       console.log(`[LOG] ${stringToEncode}`);
       const cleanedText = cleanText(stringToEncode);
 
@@ -71,8 +101,6 @@ export abstract class Importer {
         // accumulate the chunks in to the optimal size. We're good to continue
         continue;
       }
-      
-      console.log("max", buffer.length, GOLDIELOCKS.max)
 
       // Buffer is too big, we need to break this up.
       // find the end of the sentence in the buffer.
@@ -94,7 +122,10 @@ export abstract class Importer {
         if (sentenceEnd == fullSentence.length) {
           // The sentence end is at the end of the buffer, so we can just yield and move on.
           console.warn("[WARN] The sentence is still too long and can't be broken down further. Emitting.");
-          yield fullSentence;
+          yield {
+            text: fullSentence,
+            info: source.info
+          };
           break;
         }
 
@@ -105,7 +136,10 @@ export abstract class Importer {
 
       // Yield the last chunk
       if (buffer.length > 0) {
-        yield "\n" + buffer;
+        yield {
+          text: "\n" + buffer,
+          info: source.info
+        };
       }
 
       buffer = "";
