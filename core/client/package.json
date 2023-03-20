@@ -2,11 +2,13 @@
   "name": "@polymath-ai/client",
   "version": "1.1.2",
   "description": "A JavaScript client library to run Polymath",
-  "main": "src/main.js",
-  "exports": "./src/main.js",
+  "main": "dist/src/main.js",
+  "exports": "./dist/src/main.js",
   "type": "module",
   "scripts": {
-    "test": "ava"
+    "test": "ava",
+    "build": "tsc --b",
+    "watch": "tsc --b --watch"
   },
   "repository": {
     "type": "git",
@@ -22,7 +24,16 @@
     "url": "https://github.com/polymath-ai/polymath-js-client/issues"
   },
   "homepage": "https://github.com/polymath-ai/polymath-js-client#readme",
+  "ava": {
+    "typescript": {
+      "rewritePaths": {
+        "./": "dist/"
+      },
+      "compile": false
+    }
+  },
   "dependencies": {
+    "@polymath-ai/validation": "*",
     "dotenv": "^16.0.3",
     "esm": "^3.2.25",
     "find-up": "^6.3.0",
@@ -32,6 +43,9 @@
     "pinecone-client": "^1.0.1"
   },
   "devDependencies": {
-    "ava": "^5.2.0"
+    "ava": "^5.2.0",
+    "@ava/typescript": "^3.0.1",
+    "@polymath-ai/infra": "*",
+    "typescript": "^4.9.5"
   }
 }
