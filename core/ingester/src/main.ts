@@ -15,6 +15,7 @@ interface RunArguments {
   command: string;
 }
 
+// TODO: Might delete this.
 function parseOptions(options: any): Options {
   return {
     outputFile: options.outputFile,
@@ -63,10 +64,12 @@ export class Import {
 
     for await (const chunk of importer.generateChunks(source)) {
       log(`Importing chunk ${chunk.info?.url} \`${chunk.text}\``);
-      const embedding = await polymath.generateEmbedding(chunk.text);
-      if (options.debug) log(embedding);
+      chunk.embedding = await polymath.generateEmbedding(chunk.text);
+      if (options.debug) { 
+        log(chunk.embedding);
+      }
     
-      // Now we have the chunk, we will need to work out where to send it. stdout??
+      // TODO: Now we have the Bit, we will need to work out where to send it. stdout??
     }
     
     log("\nDone importing\n\n");
