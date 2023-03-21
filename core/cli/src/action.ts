@@ -1,8 +1,9 @@
-import { Base } from "./base.js";
+import { Base, BaseArgs } from "./base.js";
 import { Config } from "./config.js";
 import { Options } from "./options.js";
 import inquirer from "inquirer";
 import { Command } from "commander";
+import { CompletionOptions, PolymathOptions } from "@polymath-ai/types";
 
 export interface RunArguments {
   args: string[];
@@ -10,8 +11,10 @@ export interface RunArguments {
   command: string;
 }
 
-export type ActionArgs = { [arg: string]: any };
-export type ClientOptions = { [key: string]: any };
+export type ActionArgs = BaseArgs & {
+  config?: string;
+  [arg: string]: unknown;
+};
 
 export abstract class Action extends Base {
   #options: ActionArgs;
@@ -24,14 +27,14 @@ export abstract class Action extends Base {
   abstract run({ args, options, command }: RunArguments): Promise<void>;
 
   // TODO: get this into complete
-  completionOptions(subcommandOptions: any) {
+  completionOptions(subcommandOptions: any): CompletionOptions {
     const opts = new Options(this.#options);
     const configOption = this.#options.config;
     const config = new Config(this.#options).load(configOption);
     return opts.normalizeCompletionOptions(subcommandOptions, config);
   }
 
-  clientOptions(): ClientOptions {
+  clientOptions(): PolymathOptions {
     const opts = new Options(this.#options);
     const { debug } = this.say;
 
@@ -46,7 +49,7 @@ export abstract class Action extends Base {
   }
 
   // Ask the dear listener for a question as they didn't provide one to the CLI
-  async promptForQuestion() {
+  async promptForQuestion(): Promise<string> {
     let question = await inquirer.prompt({
       type: "input",
       name: "result",
@@ -57,8 +60,9 @@ export abstract class Action extends Base {
 }
 
 type ActionConstructor = new (options: ActionArgs) => Action;
+type ActorFunc = (...args: string[]) => void;
 
-export const actor = (cls: ActionConstructor, program: Command) => {
+export const actor = (cls: ActionConstructor, program: Command): ActorFunc => {
   return (...args: string[]) => {
     const [options, command] = args.slice(-2);
     args = args.slice(0, -2);
