@@ -16,6 +16,16 @@ interface RunArguments {
   command: string;
 }
 
+function encodeEmbedding(data : number[]) : string {
+  return Buffer.from(new Float32Array(data).buffer).toString("base64");
+}
+
+function decodeEmbedding(data : string) : number[] {
+  return Array.from(
+    new Float32Array(new Uint8Array(Buffer.from(data, "base64")).buffer)
+  );
+}
+
 // TODO: Might delete this.
 function parseOptions(options: any): Options {
   return {
@@ -70,7 +80,7 @@ export class Import {
         continue; 
       }
     
-      chunk.embedding = await polymath.generateEmbedding(chunk.text);
+      chunk.embedding = encodeEmbedding(await polymath.generateEmbedding(chunk.text));
       yield chunk;
     }
 

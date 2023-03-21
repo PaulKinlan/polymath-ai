@@ -3,6 +3,7 @@ import fs from "fs";
 import { Command, Option } from "commander";
 
 import { Import } from "./main.js";
+import { Bit, Library } from "./types.js";
 
 class CLI {
   private program;
@@ -30,18 +31,26 @@ class CLI {
       )
     );
 
-    //
-    // SUB COMMANDS
-    //
-
     program
       .argument("[question]", "Which ingester should the Polymath use?")
       .argument("[source]", "What source should be ingested?")
-      .action(async (...args: string[]) =>  {
+      .action(async (...args: string[]) => {
         const importer = new Import();
         const [options, command] = args.slice(-2);
         args = args.slice(0, -2);
-        await importer.run({ args, options, command });
+
+        const library: Library = {
+          version: 1,
+          embedding_model: "openai.com:text-embedding-ada-002",
+          bits: []
+        };
+
+        for await (const bit of importer.run({ args, options, command })) {
+          library.bits.push(bit);
+        }
+
+        fs.writeFileSync('library.json', JSON.stringify(library));
+
       });
 
     program.parse();
