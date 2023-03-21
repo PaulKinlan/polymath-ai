@@ -1,15 +1,5 @@
 import { Bit, Options } from './types.js';
-
-/*
-  Removes urls and emojis from a string
-
-  Equivalent to python's clean-text pip package.
-*/
-const cleanText = (input: string): string => {
-  return input
-    .replace(/(https?:\/\/[^\s]+)/g, "") // Remove urls
-  //.replace(/[^\u{1F600}-\u{1F6FF}\s]/ug, ""); // Remove emojis (https://stackoverflow.com/questions/24672834/how-do-i-remove-emoji-from-string)
-}
+import { cleanText } from './utils.js';
 
 // NOTE: Dependant on the model we are using with OpenAI, we need to chunk the data in to optimal sizes. In some cases we might only have one bit for an entire document.
 const MIN_CHUNK_SIZE = 500;

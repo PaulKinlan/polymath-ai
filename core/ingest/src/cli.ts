@@ -4,6 +4,7 @@ import { Command, Option } from "commander";
 
 import { Import } from "./main.js";
 import { Bit, Library } from "./types.js";
+import { cleanFilePath } from "./utils.js";
 
 class CLI {
   private program;
@@ -39,6 +40,10 @@ class CLI {
         const [options, command] = args.slice(-2);
         args = args.slice(0, -2);
 
+        const importerArg = args[0];
+        const source = args[1];
+
+
         const library: Library = {
           version: 1,
           embedding_model: "openai.com:text-embedding-ada-002",
@@ -49,7 +54,7 @@ class CLI {
           library.bits.push(bit);
         }
 
-        fs.writeFileSync('library.json', JSON.stringify(library));
+        fs.writeFileSync(`${cleanFilePath(importerArg)}-${cleanFilePath(source)}.json`, JSON.stringify(library));
 
       });
 

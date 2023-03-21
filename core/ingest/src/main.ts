@@ -4,6 +4,7 @@ import { Polymath } from "@polymath-ai/client";
 import chalk from "chalk";
 import { Importer } from "./importer.js";
 import { Bit, Options } from './types.js';
+import { encodeEmbedding } from './utils.js';
 
 const error = (...args: any[]) => console.error(chalk.red("ERROR:", ...args));
 const log = (msg: string, ...args: any[]) =>
@@ -14,16 +15,6 @@ interface RunArguments {
   args: string[];
   options: any;
   command: string;
-}
-
-function encodeEmbedding(data : number[]) : string {
-  return Buffer.from(new Float32Array(data).buffer).toString("base64");
-}
-
-function decodeEmbedding(data : string) : number[] {
-  return Array.from(
-    new Float32Array(new Uint8Array(Buffer.from(data, "base64")).buffer)
-  );
 }
 
 // TODO: Might delete this.
